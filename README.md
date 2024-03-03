@@ -4,7 +4,7 @@
 ## Targets
 * Create a Rust AWS Lambda function
 * Implement a simple service
-* Connect to a database (DynamoDB)
+* Connect to DynamoDB database
 
 ## The Lambda Function
 * The Cargo Lambda in Rust program contains two functions:
