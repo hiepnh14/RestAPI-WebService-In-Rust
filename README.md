@@ -53,7 +53,7 @@
 ### Deploy (from Cloud9):
 ![Image](./images/deploy_terminal.png)
 ### Add Triggers
-![Image](./images/addedTrigger.png)
+![Image](./images/AddedTrigger.png)
 ### Invoke result
 ![Image](./images/invoke_aws.png)
 ![Image](./images/testJson.png)
