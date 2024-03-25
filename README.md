@@ -6,7 +6,10 @@
 * Dockerfile to containerize service
 * CI/CD pipeline files
 
-## The Lambda Function
+## Demo video:
+
+[[Demo Video]](/demo.mp4)
+
 ### Rust code
 * The Cargo Lambda in Rust program contains two functions:
     * `Home` - Instruction
@@ -95,15 +98,12 @@ test:
 ```
 
 - Open Gitlab, choose Build, pipelines, then follow the instruction.
-<!-- ### Run Locally:
-![Image](./images/invoke_result.png)
-### Deploy (from Cloud9):
-![Image](./images/deploy_terminal.png)
-### Add Triggers
-![Image](./images/AddedTrigger.png)
-### Invoke result
-![Image](./images/invoke_aws.png)
-![Image](./images/testJson.png)
-![Image](./images/result.png)
-### DynamoDB database
-![Image](./images/table.png) -->
+
+## Screen Shots
+### Run Locally:
+![Image](./images/0_case.png)
+![Image](./images/hello.png)
+### Docker Image build:
+![Image](./images/dockerTerminal.png)
+### CI GITLAB
+![Image](./images/successCI.png)
