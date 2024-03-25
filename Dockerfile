@@ -1,26 +1,28 @@
-# Use the official Rust image as the base image
-FROM rust:latest as builder
+# Use the right version correponding to your rust version
+FROM rust:latest AS builder
 
-# Set the working directory inside the container
-WORKDIR /app
+# set up work directory
+WORKDIR /myapp
 USER root
 
-# Copy the source code to the container
+# copy the entire project into the working dicrectory
 COPY . .
-# Build the microservice
+
+# compile rust app in the working directory
 RUN cargo build --release
 
-# Create a new image with only the compiled microservice
+# use the right image according to different versions of glibc
 FROM debian:bookworm-slim
 
-# Set the working directory inside the container
-WORKDIR /app
+# set up working directory
+WORKDIR /myapp
 
-# Copy the compiled microservice from the builder stage
-COPY --from=builder /app/target/release/microservice .
+# copy the executable file to the working directory for easily launching
+COPY --from=builder /myapp/target/release/microservice /myapp
 
-# Expose the port that the microservice listens on
+# expose port
 EXPOSE 8080
 
-# Set the command to run the microservice
+# run the app
 CMD ["./microservice"]
+

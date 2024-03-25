@@ -1,54 +1,101 @@
-# IDS 721 Mini Project 5 
+# IDS 721 Individual Project 2
 
 
 ## Targets
-* Create a Rust AWS Lambda function
-* Implement a simple service
-* Connect to DynamoDB database
+* Simple REST API/web service in Rust
+* Dockerfile to containerize service
+* CI/CD pipeline files
 
 ## The Lambda Function
+### Rust code
 * The Cargo Lambda in Rust program contains two functions:
-    * `sum` - This function takes 2 integers and returns the sum of the two integers
-    * `multiply` - This function takes 2 integers and returns the product of two integers
-
+    * `Home` - Instruction
+    * `sum` - This function takes 2 floats and returns the sum of the two integers
+    * `multiply` - This function takes 2 floats and returns the product of two integers
+    * `substract` - This functions takes 2 floats and return the difference between them
+    * `divide` - This funstion divides 2 floats, error when the divider is 0
 ## Guidelines
-1. Install Rust and Cargo Lambda
-2. Initialize a new Rust project using `cargo lambda new <project_name>`
-3. Write the Lambda function code in the `src/main.rs` file
-4. To test the Lambda Function, use cargo lambda watch to build the project, then cargo lambda invoke <function_name> --data-file <json_file>.json to execute the function.
-5. Log in to AWS, access the IAM console, create a new user, select "Attach policies directly," and assign "IAMFullAccess" and "AWSLambda_FullAccess" policies.
-6. Go to the "Security Credentials" tab, and generate an access key.
-7. Save AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, and AWS_REGION in a new .env file.
-8. To set environment variables in the terminal, use the following commands:
-     ```
-     set -a # automatically export all variables
-     source .env
-     set +a
-     ```
-    In Powershell: do
-    ```
-    $env_vars = Get-Content -Path .env
-    foreach ($line in $env_vars) {
-    $parts = $line -split "=", 2
-    [Environment]::SetEnvironmentVariable($parts[0], $parts[1], "Process")
-    }
-    ```
-9. Run `cargo lambda build --release --arm64` to build the lambda function
-10. Run `cargo lambda deploy --iam-role <Your role ARN>` to deploy the Lambda Function to AWS from Cloud9
-11. Go to the AWS Lambda console and test the function by creating a new test event using the following event JSON:
-        ```
-        {
-            "command": "<insert command>",
-            "x": "<insert x>",
-            "y": "<insert y>"
-        }
-        ```
-12. Add a new trigger to the Lambda Function by selecting "API Gateway", creating a new API, REST API, and "Open" security
-13. Add permission `AWSDynamoDBFullAccess` to the Lambda Function's role
-15. Create a new table with the appropriate primary key in DynamoDB console.
+- Install cargo, docker, rust
+- To run the program locally:
+```
+cargo run
+```
+### Docker
+- Create a Dockerfile
+```Dockerfile
+# Use the right version correponding to your rust version
+FROM rust:latest AS builder
 
+# set up work directory
+WORKDIR /myapp
+USER root
 
-### Run Locally:
+# copy the entire project into the working dicrectory
+COPY . .
+
+# compile rust app in the working directory
+RUN cargo build --release
+
+# use the right image according to different versions of glibc
+FROM debian:bookworm-slim
+
+# set up working directory
+WORKDIR /myapp
+
+# copy the executable file to the working directory for easily launching
+COPY --from=builder /myapp/target/release/microservice /myapp
+
+# expose port
+EXPOSE 8080
+
+# run the app
+CMD ["./microservice"]
+
+```
+- Turn on Docker
+- Build the Docker image:
+```
+docker build -t image-name .
+```
+- Run the image
+```
+docker run -p 8080:8080 imagename
+```
+
+- After run the container locally, use the following command to get your hostname:
+```
+hostname I
+```
+
+### CI on Gitlab
+- create `.gitlab-co.yml` file:
+```yml
+image: docker:25.0.3
+
+variables:
+  IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
+  DOCKER_HOST: tcp://docker:2375
+  DOCKER_DRIVER: overlay2
+  DOCKER_TLS_CERTDIR: ""
+
+services:
+  - docker:dind
+
+stages:
+  - test
+
+test:
+  stage: test
+  before_script:
+  - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
+  script:
+    - docker build -t ids-individual-2 .
+    - docker run -d --name ind-2-container -p 8080:8080 ids-individual-2
+    - docker ps -a
+```
+
+- Open Gitlab, choose Build, pipelines, then follow the instruction.
+<!-- ### Run Locally:
 ![Image](./images/invoke_result.png)
 ### Deploy (from Cloud9):
 ![Image](./images/deploy_terminal.png)
@@ -59,4 +106,4 @@
 ![Image](./images/testJson.png)
 ![Image](./images/result.png)
 ### DynamoDB database
-![Image](./images/table.png)
+![Image](./images/table.png) -->

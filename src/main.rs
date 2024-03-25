@@ -12,6 +12,11 @@ struct OperationResponse {
     result: f32,
 }
 
+async fn hello() -> impl Responder {
+    HttpResponse::Ok().body("Hello! Please choose an operation to perform: sum, multiply, substract or divide")
+}
+
+
 async fn sum(req: web::Query<OperationRequest>) -> impl Responder {
     let result = req.x + req.y;
     HttpResponse::Ok().json(OperationResponse { result })
@@ -44,8 +49,9 @@ async fn main() -> std::io::Result<()> {
             .route("/multiply", web::get().to(multiply))
             .route("/substract", web::get().to(substract))
             .route("/divide", web::get().to(divide))
+            .route("/", web::get().to(hello))
     })
-    .bind("127.0.0.1:8080")?
+    .bind("0.0.0.0:8080")?
     .run()
     .await
 }
